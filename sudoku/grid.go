@@ -1,8 +1,8 @@
 package sudoku_solver
 
 import (
-        "math",
-        "github.com/tiernan8r/sudoku_solver/cell"
+        "math";
+        "github.com/tiernan8r/sudoku_solver/sudoku/cell";
         )
 
 type Grid struct {
