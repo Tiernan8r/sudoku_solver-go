@@ -1,8 +1,6 @@
 package sudoku_solver
 
 import (
-        "github.com/tiernan8r/sudoku_solver/sudoku/cell";
-        "github.com/tiernan8r/sudoku_solver/sudoku/grid";
         "fmt"
         )
 
