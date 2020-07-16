@@ -1,10 +1,11 @@
-package sudoku_solver
+package sudoku
 
 import (
         "fmt"
         )
 
-func Solve(populated_board grid.Grid) grid.Grid {
+func Solve(populated_board Grid) Grid {
     fmt.Println("SOME SORT OF SOLVING...")
+    return Grid{} 
 }
 

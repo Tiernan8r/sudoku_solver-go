@@ -1,9 +1,9 @@
-package sudoku_solver
+package sudoku
 
 type Cell struct {
     value int
     // TODO: change this 9 to reflect grid size.
-    choices make([]int, 9)
+    choices []int
     solved bool
 }
 

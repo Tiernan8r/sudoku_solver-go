@@ -1,4 +1,4 @@
-package sudoku_solver
+package sudoku
 
 import (
         "math";
@@ -7,39 +7,39 @@ import (
 type Grid struct {
 
     size int;
-    board [size][size]cell.Cell;
+    board [][]Cell;
 
 }
 
-func (grid *Grid) GetRow(row_index int) [grid.size]cell.Cell {
+func (g *Grid) GetRow(row_index int) []Cell {
     // TODO: check for row index out of bounds.
-    return grid.board[row_index];
+    return g.board[row_index];
 }
 
-func (grid *Grid) GetColumn(column_index int) [grid.size]cell.Cell {
+func (g *Grid) GetColumn(column_index int) []Cell {
     // TODO: check for column index out of bounds.
-    column := make([]cell.Cell, grid.size)
+    column := make([]Cell, g.size)
 
-    for i := 0; i < grid.size; i++ {
-        c := grid.board[i][column_index]
+    for i := 0; i < g.size; i++ {
+        c := g.board[i][column_index]
         column = append(column, c)
     }
 
     return column
 }
 
-func (grid *Grid) GetBox(row_index, column_index int) [grid.size]cell.Cell {
+func (g *Grid) GetBox(row_index, column_index int) [][]Cell {
     // TODO: check for index out of range.
-    grid_size := grid.size
-    box_size = math.Sqrt(grid_size)
+    box_size := int(math.Sqrt(float64(g.size)))
 
     lowest_row_index := row_index % box_size
     lowest_column_index := column_index % box_size
 
-    box := [box_size][box_size]cell.Cell
+    box := make([][]Cell, box_size)
     for i := 0; i < box_size; i++ {
+        box[i] = make([]Cell, box_size)
         for j := 0; j < box_size; j++ {
-                c := grid.board[lowest_row_index + i][lowest_column_index + j]
+                c := g.board[lowest_row_index + i][lowest_column_index + j]
                 box[i][j] = c
         }
     }
