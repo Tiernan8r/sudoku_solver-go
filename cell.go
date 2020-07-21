@@ -1,7 +1,7 @@
 package sudoku_solver
 
 type Cell struct {
-	// the Value in this cell, default is 0, which means unset since 0 is never used in sudoku.
+	// the Value in this cell, default is -1, which means unset since -1 is never used in sudoku.
 	value int
 	// Choices is a map of "cell entry" -> "choice availability":
 	// The "cell entry" are all the possible values that the cell could be (1-9) for a normal sudoku board.
@@ -35,16 +35,13 @@ func (c *Cell) GetValue() int {
 
 func (c *Cell) SetValue(val int) {
 	c.value = val
-	//choice := *c.GetChoices()
-	//choice[val] = 2
 	c.choices[val] = 2
 	c.solved = true
-	//c.SetSolved(true)
 }
 
 func CreateCell(val int, valueChoices map[int]int, solved bool) *Cell {
-	// since a Value of 0 is the default Value, it isn't explicitly set.
-	if val != 0 {
+	// since a Value of -1 is the default Value, it isn't explicitly set.
+	if val > -1 {
 		valueChoices[val] = 2
 	}
 	c := Cell{value: val, choices: valueChoices, solved: solved}
@@ -53,15 +50,15 @@ func CreateCell(val int, valueChoices map[int]int, solved bool) *Cell {
 
 func CreateDefaultCell() *Cell {
 	defaultChoices := make(map[int]int)
-	return CreateCell(0, defaultChoices, false)
+	return CreateCell(-1, defaultChoices, false)
 }
 
 func CreateBlankBoard(boardSize int) [][]*Cell {
 
 	cells := make([][]*Cell, boardSize)
-	for i, _ := range cells {
+	for i := range cells {
 		cells[i] = make([]*Cell, boardSize)
-		for cellIndex, _ := range cells[i] {
+		for cellIndex := range cells[i] {
 			cells[i][cellIndex] = CreateDefaultCell()
 		}
 	}

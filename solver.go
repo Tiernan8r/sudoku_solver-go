@@ -2,43 +2,102 @@ package sudoku_solver
 
 import "fmt"
 
-func Solve(populatedBoard_ptr *Grid) *Grid {
+// Solves for the unknown values in the given given Grid, and returns a pointer to the solved for Grid.
+func Solve(board_ptr *Grid) *Grid {
 
 	//Setup all the valid options for each cell
-	populatedBoard_ptr = CalculateChoices(populatedBoard_ptr)
+	board_ptr = CalculateChoices(board_ptr)
 
-	// Find the cell with only one option, eliminate the choice from others in row/column/box
-	populatedBoard_ptr = eliminatePossibilities(populatedBoard_ptr)
+	// Count the total number of solved cells, and iterate until the number of solved cells matches the total number
+	// of cells, once it does, the grid is solved
+	numSolvedCells := 0
+	// the board is a symmetric square, so the total number of cells is the square of the width
+	totalNumCells := board_ptr.size * board_ptr.size
+	solvedACell := false
 
-	//return
-	return populatedBoard_ptr
-}
+	for numSolvedCells < totalNumCells {
+		// reset the count of solved cells each iteration, to recount the total every loop
+		numSolvedCells = 0
+		// iterate over the cells in the grid
+		for _, row := range board_ptr.board {
+			for _, cell := range row {
 
-func CalculateChoices(board_ptr *Grid) *Grid {
-
-	// Setup all the valid options for each cell
-	for rowIndex, row := range board_ptr.board {
-		for columnIndex, cell_ptr := range row {
-			cellValue := cell_ptr.value
-			allCells, allCellsError := board_ptr.RelativeCells(rowIndex, columnIndex)
-			if allCellsError != nil {
-				fmt.Println(allCellsError)
-				return nil
-			}
-			for _, currentCell_ptr := range allCells {
-				if currentCell_ptr.solved {
+				// if the cell is solved, count it to the total number of solved
+				if cell.solved {
+					numSolvedCells++
 					continue
 				}
+
+				// count the number of possible values the cell could have
+				numChoices := 0
+				// The current value the cell is assumed to have, or could be assigned to have
+				currentChoice := -1
+				// iterate over all possible values for a cell
+				for i := board_ptr.minValue; i <= board_ptr.size; i++ {
+					// get the value assigned to the choices map for this potential value
+					choiceValue := cell.choices[i]
+					// if the value from the map is 0 it means this entry is up for grabs, so count it.
+					if choiceValue == 0 {
+						// count the num of choices available, and set the current choice to be the iterated on one.
+						numChoices++
+						currentChoice = i
+					}
+				}
+				// if there was only one available choice, set it.
+				if numChoices == 1 {
+					cell.SetValue(currentChoice)
+					solvedACell = true
+				}
+			}
+		}
+
+		if !solvedACell {
+			fmt.Println("Unable to solve a cell this iteration, entering an infinite loop, so quitting...")
+			break
+		}
+
+		// recalculate the choice every total iteration
+		board_ptr = CalculateChoices(board_ptr)
+	}
+
+	return board_ptr
+}
+
+// Calculates the potential call values in each cell based off of the solved for values in the row, column and box
+// relative to each cell.
+func CalculateChoices(board_ptr *Grid) *Grid {
+
+	// iterate over all cells
+	for rowIndex, row := range board_ptr.board {
+		for columnIndex, cell_ptr := range row {
+			// get the set value for the given cell, even if it is not solved for
+			cellValue := cell_ptr.value
+			// get all cells in the row, column, box relative to the current cell
+			relativeCells, relativeCellsError := board_ptr.RelativeCells(rowIndex, columnIndex)
+			// If it errored out, return the error.
+			if relativeCellsError != nil {
+				fmt.Println(relativeCellsError)
+				return nil
+			}
+			// iterate over all the relative cells to set the potential values the cell could be
+			for _, relativeCell_ptr := range relativeCells {
+				// if the cell is solved for, we don't need to set the choices.
+				if relativeCell_ptr.solved {
+					continue
+				}
+				// if the current cell is solved for, we reflect that in the choice of value for the relative cell
 				if cell_ptr.solved {
-					if currentCell_ptr.choices[cellValue] < 2 {
+					// set the value in the choice map if it is unset.
+					if relativeCell_ptr.choices[cellValue] < 2 {
 						// 1 signifies that the cell_ptr Value is taken by another cell in the row/column/box
-						currentCell_ptr.choices[cellValue] = 1
+						relativeCell_ptr.choices[cellValue] = 1
 					}
 				}
 			}
 		}
 	}
 
+	////Display the choices for each cell in the grid
 	//for rowIndex, row := range board_ptr.board {
 	//	for columnIndex, cell_ptr := range row {
 	//		fmt.Printf("(%d, %d): %d: %v\n", rowIndex, columnIndex, cell_ptr.choices, cell_ptr.solved)
@@ -47,44 +106,4 @@ func CalculateChoices(board_ptr *Grid) *Grid {
 
 	return board_ptr
 
-}
-
-func eliminatePossibilities(board_ptr *Grid) *Grid {
-
-	numSolvedCells := 0
-	totalNumCells := board_ptr.size * board_ptr.size
-
-	for numSolvedCells < totalNumCells {
-		numSolvedCells = 0
-		for rowIndex, row := range board_ptr.board {
-			for columnIndex, currentCell := range row {
-
-				if currentCell.solved {
-					numSolvedCells++
-				}
-
-				allCells, _ := board_ptr.RelativeCells(rowIndex, columnIndex)
-				for _, cell := range allCells {
-					if cell.solved || cell.value != 0 {
-						continue
-					}
-					numAvailableValues := 0
-					currentChoice := 0
-					for i := 1; i <= board_ptr.size; i++ {
-						choiceValue := cell.choices[i]
-						if choiceValue == 0 {
-							numAvailableValues++
-							currentChoice = i
-						}
-					}
-					if numAvailableValues == 1 {
-						cell.SetValue(currentChoice)
-					}
-				}
-			}
-		}
-		board_ptr = CalculateChoices(board_ptr)
-	}
-
-	return board_ptr
 }

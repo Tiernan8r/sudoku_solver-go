@@ -7,8 +7,9 @@ import (
 )
 
 type Grid struct {
-	size  int
-	board [][]*Cell
+	minValue int
+	size     int
+	board    [][]*Cell
 }
 
 type Coordinate struct {
@@ -17,14 +18,22 @@ type Coordinate struct {
 	Value       int
 }
 
+// Creates a blank Grid object containing blank Cells
 func CreateGrid(size int) *Grid {
 	boardCells := CreateBlankBoard(size)
-	g := Grid{size, boardCells}
+	minValue := 0
+	if size == 9 {
+		minValue = 1
+	}
+	g := Grid{minValue, size, boardCells}
 	return &g
 }
 
+// Create a Grid object pre populated with cell values in the given positions
 func CreatePopulatedGrid(size int, coordinates []Coordinate) (*Grid, error) {
+	// Get a blank grid to begin with
 	blankGrid := CreateGrid(size)
+	// Iterate over the given coordinates
 	for _, coord := range coordinates {
 		x, y := coord.RowIndex, coord.ColumnIndex
 		if x > size {
@@ -32,8 +41,11 @@ func CreatePopulatedGrid(size int, coordinates []Coordinate) (*Grid, error) {
 		} else if y > size {
 			return nil, errors.New("column index integer out of bounds")
 		}
+
+		// Get the cells associated with the given coordinates and assign the values accordingly.
 		cell := blankGrid.board[x][y]
 		cell.value = coord.Value
+		// A value of 2 in the map means the cell is solved for this value
 		cell.choices[coord.Value] = 2
 		cell.solved = true
 	}
@@ -76,6 +88,7 @@ func (g *Grid) SetNewCell(rowIndex, columnIndex int, val int, choices map[int]in
 	return g.SetCell(rowIndex, columnIndex, cell)
 }
 
+// A method to set the value of the cell at the given indices to the given value
 func (g *Grid) SetNewCellValue(rowIndex, columnIndex, val int) error {
 	choices := make(map[int]int)
 	return g.SetNewCell(rowIndex, columnIndex, val, choices, true)
@@ -102,6 +115,7 @@ func (g *Grid) GetColumn(columnIndex int) ([]*Cell, error) {
 
 	column := make([]*Cell, 0)
 
+	// Iterate down the rows to get the cell in the given column.
 	for i := 0; i < g.size; i++ {
 		cell := g.board[i][columnIndex]
 		column = append(column, cell)
@@ -109,6 +123,7 @@ func (g *Grid) GetColumn(columnIndex int) ([]*Cell, error) {
 	return column, nil
 }
 
+// In sudoku, each cell occupies a box where the entry has to be unique, this method finds the box for the cell.
 func (g *Grid) GetBox(rowIndex, columnIndex int) ([][]*Cell, error) {
 	if rowIndex > g.size {
 		return nil, errors.New("row index integer out of bounds")
@@ -116,16 +131,12 @@ func (g *Grid) GetBox(rowIndex, columnIndex int) ([][]*Cell, error) {
 		return nil, errors.New("column index integer out of bounds")
 	}
 
+	// Find the width of the box from the grid size.
 	boxSize := int(math.Sqrt(float64(g.size)))
 
-	lowestRowIndex := int(math.Floor(float64(rowIndex / boxSize))) * boxSize
-	lowestColumnIndex := int(math.Floor(float64(columnIndex / boxSize))) * boxSize
-	//fmt.Println("ROW INDEX:", rowIndex)
-	//fmt.Println("COLUMN INDEX:", columnIndex)
-	//fmt.Println("BOX SIZE:", boxSize)
-	//fmt.Println("LOWEST ROW INDEX:", lowestRowIndex)
-	//fmt.Println("LOWEST COLUMN INDEX:", lowestColumnIndex)
-	//fmt.Println()
+	// Find the upper left corner of the box to index from
+	lowestRowIndex := int(math.Floor(float64(rowIndex/boxSize))) * boxSize
+	lowestColumnIndex := int(math.Floor(float64(columnIndex/boxSize))) * boxSize
 
 	box := make([][]*Cell, boxSize)
 	for i := 0; i < boxSize; i++ {
@@ -138,8 +149,10 @@ func (g *Grid) GetBox(rowIndex, columnIndex int) ([][]*Cell, error) {
 	return box, nil
 }
 
+// A method to get all the unique cells in the row, column and box that the given cell indices occupy.
 func (g *Grid) RelativeCells(rowIndex, columnIndex int) ([]*Cell, error) {
 
+	// get the row, column and box of the cell
 	row, rowError := g.GetRow(rowIndex)
 	column, columnError := g.GetColumn(columnIndex)
 	box, boxError := g.GetBox(rowIndex, columnIndex)
@@ -152,9 +165,12 @@ func (g *Grid) RelativeCells(rowIndex, columnIndex int) ([]*Cell, error) {
 		return nil, boxError
 	}
 
+	// keep track of whether the cell is unique or not to prevent double counting.
 	encounteredCell := make(map[*Cell]bool)
 	var allCells []*Cell
+	// iterate over the cells in the row, column and box and add the cells to the total only if they are unique.
 	for _, rowCell := range row {
+		// the uniqueness check is technically superfluous for the row since the slice is initially empty...
 		if encounteredCell[rowCell] == false {
 			encounteredCell[rowCell] = true
 			allCells = append(allCells, rowCell)
@@ -178,23 +194,33 @@ func (g *Grid) RelativeCells(rowIndex, columnIndex int) ([]*Cell, error) {
 	return allCells, nil
 }
 
+// Creates a simple text table display of the sudoku grid.
 func (g *Grid) Display() {
 
+	// Iterate down the rows
 	for _, row := range g.board {
+		// setup the border of the table with a pipe
 		text := "|"
-		for _, c := range row {
+		// iterate across the cells in the row
+		for _, cell := range row {
+			// If the cell is unsolved, display only a space character
 			val := " "
-			if c.solved {
-				val = fmt.Sprintf("%d", c.value)
+			if cell.solved {
+				// if the cell is solved for, convert the int value to a string
+				val = fmt.Sprintf("%d", cell.value)
 			}
+			// display each value in a box with a pipe separating each value
 			text += fmt.Sprintf("%2s |", val)
 		}
+		// Print the header for the row cells
 		for j := 0; j < g.size; j++ {
 			fmt.Print("+---")
 		}
 		fmt.Println("+")
+		// print the cell values.
 		fmt.Println(text)
 	}
+	// print a base for the cells.
 	for j := 0; j < g.size; j++ {
 		fmt.Print("+---")
 	}
