@@ -1,42 +1,30 @@
-package sudoku_solver
+package board
 
 type Cell struct {
 	// the Value in this cell, default is -1, which means unset since -1 is never used in sudoku.
-	value int
+	Value int
 	// Choices is a map of "cell entry" -> "choice availability":
 	// The "cell entry" are all the possible values that the cell could be (1-9) for a normal sudoku board.
 	// "choice availabilty" is an integer:
 	// - 0: the Value is up for grabs by this cell
 	// - 1: the Value exists somewhere in the row/column/box relative to this cell.
 	// - 2: the Value is solved/set as a hint
-	choices map[int]int
-	// whether this entry has been either preset or solved.
-	solved bool
-}
-
-func (c *Cell) GetSolved() bool {
-	return c.solved
-}
-
-func (c *Cell) SetSolved(solved bool) {
-	c.solved = solved
+	Choices map[int]int
+	// whether this entry has been either preset or Solved.
+	Solved bool
 }
 
 func (c *Cell) GetChoices() *map[int]int {
-	if c.choices == nil {
-		c.choices = make(map[int]int)
+	if c.Choices == nil {
+		c.Choices = make(map[int]int)
 	}
-	return &c.choices
-}
-
-func (c *Cell) GetValue() int {
-	return c.value
+	return &c.Choices
 }
 
 func (c *Cell) SetValue(val int) {
-	c.value = val
-	c.choices[val] = 2
-	c.solved = true
+	c.Value = val
+	c.Choices[val] = 2
+	c.Solved = true
 }
 
 func CreateCell(val int, valueChoices map[int]int, solved bool) *Cell {
@@ -44,7 +32,7 @@ func CreateCell(val int, valueChoices map[int]int, solved bool) *Cell {
 	if val > -1 {
 		valueChoices[val] = 2
 	}
-	c := Cell{value: val, choices: valueChoices, solved: solved}
+	c := Cell{Value: val, Choices: valueChoices, Solved: solved}
 	return &c
 }
 

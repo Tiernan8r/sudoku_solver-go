@@ -1,3 +1,3 @@
 module github.com/tiernan8r/sudoku_solver
 
-go 1.14
+go 1.16

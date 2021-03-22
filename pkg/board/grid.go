@@ -1,4 +1,4 @@
-package sudoku_solver
+package board
 
 import (
 	"errors"
@@ -7,9 +7,9 @@ import (
 )
 
 type Grid struct {
-	minValue int
-	size     int
-	board    [][]*Cell
+	MinValue int
+	Size     int
+	Board    [][]*Cell
 }
 
 type Coordinate struct {
@@ -43,42 +43,34 @@ func CreatePopulatedGrid(size int, coordinates []Coordinate) (*Grid, error) {
 		}
 
 		// Get the cells associated with the given coordinates and assign the values accordingly.
-		cell := blankGrid.board[x][y]
-		cell.value = coord.Value
+		cell := blankGrid.Board[x][y]
+		cell.Value = coord.Value
 		// A value of 2 in the map means the cell is solved for this value
-		cell.choices[coord.Value] = 2
-		cell.solved = true
+		cell.Choices[coord.Value] = 2
+		cell.Solved = true
 	}
 	return blankGrid, nil
 }
 
-func (g *Grid) GetBoardSize() int {
-	return g.size
-}
-
-func (g *Grid) GetBoard() [][]*Cell {
-	return g.board
-}
-
 func (g *Grid) GetCell(rowIndex, columnIndex int) (*Cell, error) {
-	if rowIndex > g.size {
+	if rowIndex > g.Size {
 		return nil, errors.New("row index integer out of bounds")
-	} else if columnIndex > g.size {
+	} else if columnIndex > g.Size {
 		return nil, errors.New("column index integer out of bounds")
 	}
 
-	return g.board[rowIndex][columnIndex], nil
+	return g.Board[rowIndex][columnIndex], nil
 }
 
 func (g *Grid) SetCell(rowIndex, columnIndex int, cell *Cell) error {
 
-	if rowIndex > g.size {
+	if rowIndex > g.Size {
 		return errors.New("row index integer out of bounds")
-	} else if columnIndex > g.size {
+	} else if columnIndex > g.Size {
 		return errors.New("column index integer out of bounds")
 	}
 
-	g.board[rowIndex][columnIndex] = cell
+	g.Board[rowIndex][columnIndex] = cell
 	return nil
 
 }
@@ -95,12 +87,12 @@ func (g *Grid) SetNewCellValue(rowIndex, columnIndex, val int) error {
 }
 
 func (g *Grid) GetRow(rowIndex int) ([]*Cell, error) {
-	if rowIndex > g.size {
+	if rowIndex > g.Size {
 		return nil, errors.New("row index integer out of bounds")
 	}
 
 	row := make([]*Cell, 0)
-	actualRow := g.board[rowIndex]
+	actualRow := g.Board[rowIndex]
 	for _, cell := range actualRow {
 		row = append(row, cell)
 	}
@@ -109,15 +101,15 @@ func (g *Grid) GetRow(rowIndex int) ([]*Cell, error) {
 
 func (g *Grid) GetColumn(columnIndex int) ([]*Cell, error) {
 
-	if columnIndex > g.size {
+	if columnIndex > g.Size {
 		return nil, errors.New("column index integer out of bounds")
 	}
 
 	column := make([]*Cell, 0)
 
 	// Iterate down the rows to get the cell in the given column.
-	for i := 0; i < g.size; i++ {
-		cell := g.board[i][columnIndex]
+	for i := 0; i < g.Size; i++ {
+		cell := g.Board[i][columnIndex]
 		column = append(column, cell)
 	}
 	return column, nil
@@ -125,14 +117,14 @@ func (g *Grid) GetColumn(columnIndex int) ([]*Cell, error) {
 
 // In sudoku, each cell occupies a box where the entry has to be unique, this method finds the box for the cell.
 func (g *Grid) GetBox(rowIndex, columnIndex int) ([][]*Cell, error) {
-	if rowIndex > g.size {
+	if rowIndex > g.Size {
 		return nil, errors.New("row index integer out of bounds")
-	} else if columnIndex > g.size {
+	} else if columnIndex > g.Size {
 		return nil, errors.New("column index integer out of bounds")
 	}
 
 	// Find the width of the box from the grid size.
-	boxSize := int(math.Sqrt(float64(g.size)))
+	boxSize := int(math.Sqrt(float64(g.Size)))
 
 	// Find the upper left corner of the box to index from
 	lowestRowIndex := int(math.Floor(float64(rowIndex/boxSize))) * boxSize
@@ -142,7 +134,7 @@ func (g *Grid) GetBox(rowIndex, columnIndex int) ([][]*Cell, error) {
 	for i := 0; i < boxSize; i++ {
 		box[i] = make([]*Cell, boxSize)
 		for j := 0; j < boxSize; j++ {
-			c := g.board[lowestRowIndex+i][lowestColumnIndex+j]
+			c := g.Board[lowestRowIndex+i][lowestColumnIndex+j]
 			box[i][j] = c
 		}
 	}
@@ -198,22 +190,22 @@ func (g *Grid) RelativeCells(rowIndex, columnIndex int) ([]*Cell, error) {
 func (g *Grid) Display() {
 
 	// Iterate down the rows
-	for _, row := range g.board {
+	for _, row := range g.Board {
 		// setup the border of the table with a pipe
 		text := "|"
 		// iterate across the cells in the row
 		for _, cell := range row {
 			// If the cell is unsolved, display only a space character
 			val := " "
-			if cell.solved {
+			if cell.Solved {
 				// if the cell is solved for, convert the int value to a string
-				val = fmt.Sprintf("%d", cell.value)
+				val = fmt.Sprintf("%d", cell.Value)
 			}
 			// display each value in a box with a pipe separating each value
 			text += fmt.Sprintf("%2s |", val)
 		}
 		// Print the header for the row cells
-		for j := 0; j < g.size; j++ {
+		for j := 0; j < g.Size; j++ {
 			fmt.Print("+---")
 		}
 		fmt.Println("+")
@@ -221,7 +213,7 @@ func (g *Grid) Display() {
 		fmt.Println(text)
 	}
 	// print a base for the cells.
-	for j := 0; j < g.size; j++ {
+	for j := 0; j < g.Size; j++ {
 		fmt.Print("+---")
 	}
 	fmt.Println("+")
