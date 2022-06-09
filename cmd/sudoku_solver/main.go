@@ -14,44 +14,37 @@ func main() {
 
 	coordinates := make([]board.Coordinate, 0)
 	// 9 * 9 GRID
-	coordinates = append(coordinates, board.Coordinate{0, 0, 6})
-	coordinates = append(coordinates, board.Coordinate{0, 1, 4})
-	coordinates = append(coordinates, board.Coordinate{0, 4, 3})
-	coordinates = append(coordinates, board.Coordinate{0, 8, 7})
+	coordinates = append(coordinates, board.Coordinate{0, 1, 5})
+	coordinates = append(coordinates, board.Coordinate{0, 3, 7})
+	coordinates = append(coordinates, board.Coordinate{0, 4, 2})
+	coordinates = append(coordinates, board.Coordinate{0, 6, 9})
+	coordinates = append(coordinates, board.Coordinate{0, 8, 3})
 
-	coordinates = append(coordinates, board.Coordinate{1, 0, 5})
-	coordinates = append(coordinates, board.Coordinate{1, 2, 1})
-	coordinates = append(coordinates, board.Coordinate{1, 4, 7})
-	coordinates = append(coordinates, board.Coordinate{1, 6, 9})
+	coordinates = append(coordinates, board.Coordinate{1, 0, 9})
+	coordinates = append(coordinates, board.Coordinate{1, 5, 6})
+	coordinates = append(coordinates, board.Coordinate{1, 8, 4})
 
-	coordinates = append(coordinates, board.Coordinate{2, 7, 1})
+	coordinates = append(coordinates, board.Coordinate{2, 4, 1})
 
-	coordinates = append(coordinates, board.Coordinate{3, 2, 4})
-	coordinates = append(coordinates, board.Coordinate{3, 3, 9})
-	coordinates = append(coordinates, board.Coordinate{3, 5, 8})
-	coordinates = append(coordinates, board.Coordinate{3, 7, 6})
+	coordinates = append(coordinates, board.Coordinate{3, 1, 2})
+	coordinates = append(coordinates, board.Coordinate{3, 3, 4})
+	coordinates = append(coordinates, board.Coordinate{3, 4, 6})
+	coordinates = append(coordinates, board.Coordinate{3, 8, 8})
 
-	coordinates = append(coordinates, board.Coordinate{4, 1, 8})
-	coordinates = append(coordinates, board.Coordinate{4, 5, 3})
-	coordinates = append(coordinates, board.Coordinate{4, 7, 2})
+	coordinates = append(coordinates, board.Coordinate{4, 1, 7})
+	coordinates = append(coordinates, board.Coordinate{4, 2, 4})
+	coordinates = append(coordinates, board.Coordinate{4, 3, 8})
 
-	coordinates = append(coordinates, board.Coordinate{5, 3, 4})
+	coordinates = append(coordinates, board.Coordinate{5, 5, 1})
+	coordinates = append(coordinates, board.Coordinate{5, 7, 7})
 
-	coordinates = append(coordinates, board.Coordinate{6, 0, 4})
-	coordinates = append(coordinates, board.Coordinate{6, 3, 1})
-	coordinates = append(coordinates, board.Coordinate{6, 4, 5})
-	coordinates = append(coordinates, board.Coordinate{6, 5, 7})
-	coordinates = append(coordinates, board.Coordinate{6, 7, 3})
+	coordinates = append(coordinates, board.Coordinate{6, 1, 9})
+	coordinates = append(coordinates, board.Coordinate{6, 8, 5})
 
-	coordinates = append(coordinates, board.Coordinate{7, 0, 2})
-	coordinates = append(coordinates, board.Coordinate{7, 2, 8})
-	coordinates = append(coordinates, board.Coordinate{7, 3, 3})
-	coordinates = append(coordinates, board.Coordinate{7, 7, 4})
-
-	coordinates = append(coordinates, board.Coordinate{8, 0, 7})
-	coordinates = append(coordinates, board.Coordinate{8, 1, 5})
-	coordinates = append(coordinates, board.Coordinate{8, 7, 9})
-	coordinates = append(coordinates, board.Coordinate{8, 8, 6})
+	coordinates = append(coordinates, board.Coordinate{7, 0, 5})
+	coordinates = append(coordinates, board.Coordinate{7, 2, 1})
+	coordinates = append(coordinates, board.Coordinate{7, 7, 2})
+	coordinates = append(coordinates, board.Coordinate{7, 8, 6})
 
 	// 16 * 16 GRID
 	// 1-9, A=10,B=11,C=12,D=13,E=14,F=15
